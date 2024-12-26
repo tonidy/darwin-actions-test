@@ -12,3 +12,9 @@ jobs:
 
       - name: Test bun
         run: source /Users/runner/.bashrc && bun --version
+
+      - name: Check HV
+        run: sysctl kern.hv_support
+
+      - name: Check brand
+        run: sysctl -n machdep.cpu.brand_string
