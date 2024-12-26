@@ -19,8 +19,9 @@ jobs:
       - name: Check brand
         run: sysctl -n machdep.cpu.brand_string
 
-      - name: Check virt
-        run: sysctl kern.hv_support
+      # Not working
+      #- name: Check virt
+      #  run: sysctl kern.hv_support
 
       - name: Check HV
         run: system_profiler SPHardwareDataType | grep -i "chip"
