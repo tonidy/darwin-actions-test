@@ -28,6 +28,6 @@ jobs:
       - name: Check HV FW
         run: ls /System/Library/Frameworks/Hypervisor.framework
 
-      - name: Install docker
-        run: brew install docker && docker run --rm hello-world
+      # - name: Install docker
+      #  run: brew install docker && docker run --rm hello-world
 
