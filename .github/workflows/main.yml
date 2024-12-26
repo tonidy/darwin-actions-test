@@ -13,6 +13,9 @@ jobs:
       - name: Test bun
         run: source /Users/runner/.bashrc && bun --version
 
+      - name: Check OS version
+        run: sw_vers
+
       - name: Check brand
         run: sysctl -n machdep.cpu.brand_string
 
@@ -21,4 +24,7 @@ jobs:
 
       - name: Check HV FW
         run: ls /System/Library/Frameworks/Hypervisor.framework
+
+      - name: Install docker
+        run: brew install docker && docker run --rm hello-world
 
