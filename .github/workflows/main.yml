@@ -9,3 +9,6 @@ jobs:
     steps:
       - name: Install bun
         run: curl -fsSL https://bun.sh/install | bash
+
+      - name: Test bun
+        run: source /Users/runner/.bashrc && bun --version
