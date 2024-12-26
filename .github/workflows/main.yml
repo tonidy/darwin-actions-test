@@ -13,8 +13,12 @@ jobs:
       - name: Test bun
         run: source /Users/runner/.bashrc && bun --version
 
-      - name: Check HV
-        run: sysctl kern.hv_support
-
       - name: Check brand
         run: sysctl -n machdep.cpu.brand_string
+
+      - name: Check HV
+        run: system_profiler SPHardwareDataType | grep -i "chip"
+
+      - name: Check HV FW
+        run: ls /System/Library/Frameworks/Hypervisor.framework
+
