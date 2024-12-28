@@ -28,7 +28,7 @@ jobs:
 
       - name: Get Darwin images from cache
         id: restore-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: BaseSystem.dmg
           key: ${{ runner.os }}-base-system
@@ -37,15 +37,18 @@ jobs:
           #   ${{ runner.os }}-
 
       - name: Download Darwin images
-        if: steps.restore-cache.outputs.cache-hit != 'true'
+        if: steps.restore-cache.outputs.cache-hit == 'false'
         run: python3 scripts/fetch_darwin.py -s big-sur
 
-      # - uses: actions/cache/save@v4
-      #   id: save-cache
-      #   with:
-      #     path: BaseSystem.dmg
-      #     key: ${{ steps.restore-cache.outputs.cache-primary-key }}
-      #     # key: ${{ runner.os }}-${{ hashFiles('BaseSystem.dmg') }}
+      - uses: actions/cache/save@v4
+        id: save-cache
+        with:
+          path: BaseSystem.dmg
+          key: ${{ steps.restore-cache.outputs.cache-primary-key }}
+          # key: ${{ runner.os }}-${{ hashFiles('BaseSystem.dmg') }}
+
+      - name: Convert base image
+        run: qemu-img convert BaseSystem.dmg -O qcow2 -p -c BaseSystem.img} 
 
       - name: Create HDD
         run: qemu-img create -f qcow2 mac_hdd_ng.img 35G
@@ -61,5 +64,7 @@ jobs:
             -v ${PWD}/mac_hdd_ng.img:/image \
             --device /dev/kvm \
             -p 50922:10022 \
+            -e SHORTNAME=big-sur \
+            -e HEADLESS=true \
             -e OSX_COMMANDS='/bin/bash -c "sw_vers"' \
             docker-osx:auto
