@@ -57,7 +57,6 @@ jobs:
 
       - name: Convert base dmg to img
         if: steps.restore-base-img-cache.outputs.cache-hit != 'true'
-        id: save-base-img-cache
         run: qemu-img convert BaseSystem.dmg -O qcow2 -p -c BaseSystem.img
 
       - uses: actions/cache/save@v4
