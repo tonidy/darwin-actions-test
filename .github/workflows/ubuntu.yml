@@ -17,8 +17,8 @@ jobs:
       - name: Run docker osx
         run: |
           # boot to OS X shell + display + specify commands to run inside OS X!
-          docker run -it \
+          docker run \
             --device /dev/kvm \
             -p 50922:10022 \
-            -e "OSX_COMMANDS=/bin/bash -c \"sw_vers\"" \
+            -e OSX_COMMANDS='/bin/bash -c "sw_vers"' \
             sickcodes/docker-osx:auto
