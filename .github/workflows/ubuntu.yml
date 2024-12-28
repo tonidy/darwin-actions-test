@@ -49,7 +49,7 @@ jobs:
       - name: Build docker darwin
         run: |
           cd docker-darwin
-          docker build -e COMPLETE=false -v ${PWD}/mac_hdd_ng.img:/image  -t docker-osx:auto -f Dockerfile.auto .
+          docker build --build-arg COMPLETE=false -v ${PWD}/mac_hdd_ng.img:/image  -t docker-osx:auto -f Dockerfile.auto .
 
       - name: Run docker darwin
         run: |
