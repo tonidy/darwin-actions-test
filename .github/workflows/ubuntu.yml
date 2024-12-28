@@ -28,20 +28,24 @@ jobs:
 
       - name: Get Darwin images from cache
         id: restore-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache@v4
         with:
           path: BaseSystem.dmg
-          key: ${{ runner.os }}-${{ hashFiles('BaseSystem.dmg') }}
+          key: ${{ runner.os }}-base-system
+          # key: ${{ runner.os }}-${{ hashFiles('BaseSystem.dmg') }}
+          # restore-keys: |
+          #   ${{ runner.os }}-
 
       - name: Download Darwin images
         if: steps.restore-cache.outputs.cache-hit != 'true'
         run: python3 scripts/fetch_darwin.py -s big-sur
 
-      - uses: actions/cache/save@v4
-        id: save-cache
-        with:
-          path: BaseSystem.dmg
-          key: ${{ runner.os }}-${{ hashFiles('BaseSystem.dmg') }}
+      # - uses: actions/cache/save@v4
+      #   id: save-cache
+      #   with:
+      #     path: BaseSystem.dmg
+      #     key: ${{ steps.restore-cache.outputs.cache-primary-key }}
+      #     # key: ${{ runner.os }}-${{ hashFiles('BaseSystem.dmg') }}
 
       - name: Create HDD
         run: qemu-img create -f qcow2 mac_hdd_ng.img 35G
