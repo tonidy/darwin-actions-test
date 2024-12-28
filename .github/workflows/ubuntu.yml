@@ -1,5 +1,6 @@
 name: KVM Workflow
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
 
 jobs:
   bun_on_ubuntu:
@@ -7,5 +8,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check bun
-        run: bun -v
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run docker osx
+        run: |
+          # boot to OS X shell + display + specify commands to run inside OS X!
+          docker run -it \
+            --device /dev/kvm \
+            -p 50922:10022 \
+            -e "OSX_COMMANDS=/bin/bash -c \"sw_vers\"" \
+            sickcodes/docker-osx:auto
