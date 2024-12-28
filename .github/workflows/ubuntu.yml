@@ -1,0 +1,11 @@
+name: KVM Workflow
+on: [workflow_dispatch]
+
+jobs:
+  bun_on_ubuntu:
+    name: Test bun installer on nested VM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check bun
+        run: bun -v
