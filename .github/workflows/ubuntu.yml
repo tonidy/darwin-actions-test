@@ -26,6 +26,9 @@ jobs:
       - name: Download darwin
         run: python3 scripts/fetch_darwin.py -s big-sur
 
+      - name: Create HDD
+        run: qemu-img create -f qcow2 mac_hdd_ng_auto.img 35G
+
       - name: Build docker darwin
         run: |
           cd docker-darwin
