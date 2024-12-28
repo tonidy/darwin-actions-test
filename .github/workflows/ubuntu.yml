@@ -27,17 +27,21 @@ jobs:
         run: sudo apt-get install -y qemu-utils
 
       - name: Get Darwin images from cache
-        id: cache-file1
-        uses: actions/cache@v4
+        id: restore-cache
+        uses: actions/cache/restore@v4
         with:
           path: BaseSystem.dmg
-          key: ${{ runner.os }}-darwin-images
-          # restore-keys: |
-          #   - BaseSystem.dmg
+          key: ${{ runner.os }}-${{ hashFiles('BaseSystem.dmg') }}
 
       - name: Download Darwin images
         if: steps.cache-primes.outputs.cache-hit != 'true'
         run: python3 scripts/fetch_darwin.py -s big-sur
+
+      - uses: actions/cache/save@v4
+        id: save-cache
+        with:
+          path: BaseSystem.dmg
+          key: ${{ runner.os }}-${{ hashFiles('BaseSystem.dmg') }}
 
       - name: Create HDD
         run: qemu-img create -f qcow2 mac_hdd_ng.img 35G
