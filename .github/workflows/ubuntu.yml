@@ -37,10 +37,11 @@ jobs:
           #   ${{ runner.os }}-
 
       - name: Download Darwin images
-        if: steps.restore-cache.outputs.cache-hit == 'false'
+        if: steps.restore-cache.outputs.cache-hit == 'true'
         run: python3 scripts/fetch_darwin.py -s big-sur
 
       - uses: actions/cache/save@v4
+        if: always() && steps.restore-cache.outputs.cache-hit != 'true'
         id: save-cache
         with:
           path: BaseSystem.dmg
