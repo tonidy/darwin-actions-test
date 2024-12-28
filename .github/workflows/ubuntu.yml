@@ -78,7 +78,7 @@ jobs:
         run: |
           docker run \
             -v ${PWD}/mac_hdd_ng.img:/image \
-            -v ${PWD}/BaseSystem.img:./BaseSystem.img \
+            -v ${PWD}/BaseSystem.img:/home/arch/OSX-KVM/BaseSystem.img \
             -p 50922:10022 \
             -e SHORTNAME=big-sur \
             -e HEADLESS=true \
