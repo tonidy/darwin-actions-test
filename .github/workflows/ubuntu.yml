@@ -23,7 +23,20 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Download darwin
+      - name: Install qemu utils
+        run: sudo apt-get install -y qemu-utils
+
+      - name: Get Darwin images from cache
+        id: cache-file1
+        uses: actions/cache@v4
+        with:
+          path: BaseSystem.dmg
+          key: ${{ hashFiles('BaseSystem.dmg') }}
+          # restore-keys: |
+          #   - BaseSystem.dmg
+
+      - name: Download Darwin images
+        if: steps.cache-primes.outputs.cache-hit != 'true'
         run: python3 scripts/fetch_darwin.py -s big-sur
 
       - name: Create HDD
