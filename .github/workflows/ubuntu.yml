@@ -53,7 +53,7 @@ jobs:
       - name: Build docker darwin
         run: |
           cd docker-darwin
-          docker build --build-arg COMPLETE=false  -t docker-osx:auto -f Dockerfile.auto .
+          docker build --build-arg COMPLETE=  -t docker-osx:auto -f Dockerfile.auto .
 
       - name: Run docker darwin
         run: |
