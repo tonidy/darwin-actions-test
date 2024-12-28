@@ -27,7 +27,7 @@ jobs:
         run: sudo apt-get install -y qemu-utils
 
       - name: Get Darwin images from cache
-        id: restore-cache
+        id: restore-base-cache
         uses: actions/cache/restore@v4
         with:
           path: BaseSystem.dmg
@@ -37,19 +37,35 @@ jobs:
           #   ${{ runner.os }}-
 
       - name: Download Darwin images
-        if: steps.restore-cache.outputs.cache-hit != 'true'
+        if: steps.restore-base-cache.outputs.cache-hit != 'true'
         run: python3 scripts/fetch_darwin.py -s big-sur
 
       - uses: actions/cache/save@v4
-        if: always() && steps.restore-cache.outputs.cache-hit != 'true'
-        id: save-cache
+        if: always() && steps.restore-base-cache.outputs.cache-hit != 'true'
+        id: save-base-cache
         with:
           path: BaseSystem.dmg
-          key: ${{ steps.restore-cache.outputs.cache-primary-key }}
+          key: ${{ steps.restore-base-cache.outputs.cache-primary-key }}
           # key: ${{ runner.os }}-${{ hashFiles('BaseSystem.dmg') }}
 
-      - name: Convert base image
-        run: qemu-img convert BaseSystem.dmg -O qcow2 -p -c BaseSystem.img} 
+      - name: Get base img from cache
+        id: restore-base-img-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: BaseSystem.img
+          key: ${{ runner.os }}-base-img-system
+
+      - name: Convert base dmg to img
+        if: steps.restore-base-img-cache.outputs.cache-hit != 'true'
+        id: save-base-img-cache
+        run: qemu-img convert BaseSystem.dmg -O qcow2 -p -c BaseSystem.img
+
+      - uses: actions/cache/save@v4
+        if: always() && steps.restore-base-img-cache.outputs.cache-hit != 'true'
+        id: save-base-img-cache
+        with:
+          path: BaseSystem.img
+          key: ${{ steps.restore-base-img-cache.outputs.cache-primary-key }}
 
       - name: Create HDD
         run: qemu-img create -f qcow2 mac_hdd_ng.img 35G
@@ -63,9 +79,10 @@ jobs:
         run: |
           docker run \
             -v ${PWD}/mac_hdd_ng.img:/image \
-            --device /dev/kvm \
+            -v ${PWD}/BaseSystem.img:./BaseSystem.img
             -p 50922:10022 \
             -e SHORTNAME=big-sur \
             -e HEADLESS=true \
             -e OSX_COMMANDS='/bin/bash -c "sw_vers"' \
+            --device /dev/kvm \
             docker-osx:auto
